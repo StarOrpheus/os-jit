@@ -26,7 +26,10 @@ struct runtime_function<R(*)(Args...)>
         std::copy_n(it, count, reinterpret_cast<unsigned char*>(_ptr));
 
         if (mprotect(_ptr, count, PROT_READ | PROT_EXEC) == -1)
+        {
+            munmap(_ptr, count);
             return;
+        }
 
         ptr = _ptr;
         cnt = count;
