@@ -31,6 +31,11 @@ struct runtime_function<R(*)(Args...)>
         mprotect(ptr, count, PROT_READ | PROT_EXEC);
     }
 
+    bool empty() const noexcept
+    {
+        return ptr == nullptr;
+    }
+
     template<typename... Argv>
     R execute(Argv&&... args) const
     {

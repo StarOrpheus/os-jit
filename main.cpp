@@ -31,7 +31,7 @@ using func_t = void(*)(char const*, size_t);
 int main()
 {
     runtime_function<func_t> f(func_code, func_code_len);
-
-    f.execute(hello_world, len);
+    if (!f.empty())
+        f.execute(hello_world, len);
     return 0;
 }
