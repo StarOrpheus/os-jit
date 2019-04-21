@@ -17,18 +17,19 @@ struct runtime_function<R(*)(Args...)>
     template<typename ConstInputIterator>
     runtime_function(ConstInputIterator it,
                      size_t count) noexcept(noexcept(*it))
-        : cnt(count)
+        : ptr(nullptr), cnt(0)
     {
-        ptr = mmap(nullptr, count, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
-        if (ptr == MAP_FAILED)
-        {
-            ptr = nullptr;
+        auto _ptr = mmap(nullptr, count, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+        if (_ptr == MAP_FAILED)
             return;
-        }
 
-        std::copy_n(it, count, reinterpret_cast<unsigned char*>(ptr));
+        std::copy_n(it, count, reinterpret_cast<unsigned char*>(_ptr));
 
-        mprotect(ptr, count, PROT_READ | PROT_EXEC);
+        if (mprotect(_ptr, count, PROT_READ | PROT_EXEC) == -1)
+            return;
+
+        ptr = _ptr;
+        cnt = count;
     }
 
     bool empty() const noexcept
