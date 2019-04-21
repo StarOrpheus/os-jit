@@ -1,12 +1,12 @@
 #include "runtime_function.hpp"
 
-
-constexpr size_t _strlen(char const* str)
+template<size_t N>
+constexpr inline size_t _strlen(const char(&str)[N])
 {
-    return (*str == '\0' ? 0 : _strlen(str + 1) + 1);
+    return N - 1;
 }
 
-constexpr static char const* hello_world = "Hello world!\n";
+constexpr static char const hello_world[] = "Hello world!\n";
 constexpr static size_t len = _strlen(hello_world);
 
 constexpr static unsigned char func_code[] =
